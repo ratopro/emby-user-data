@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Emby.UserData</AssemblyName>
     <RootNamespace>Emby.UserData</RootNamespace>
-    <Version>1.1.5</Version>
+    <Version>1.1.6</Version>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
