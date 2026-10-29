@@ -11,7 +11,8 @@ namespace Emby.UserData.Services {
   const string LatestReleaseUrl="https://api.github.com/repos/ratopro/emby-user-data/releases/latest";
   public async Task CheckAndUpdateAsync(bool force = false) {
    var config=Plugin.Instance.Configuration;
-   force=force||config.ManualUpdateRequested;
+   var manualCheck=config.ManualUpdateRequested;
+   force=force||manualCheck;
    if(config.ManualUpdateRequested) { config.ManualUpdateRequested=false; Plugin.Instance.SaveConfiguration(); }
    if(!force&&!config.AutoUpdateEnabled) return;
    try {
@@ -21,8 +22,10 @@ namespace Emby.UserData.Services {
      var tag=Match(json,"\\\"tag_name\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"");
      var url=Match(json,"\\\"browser_download_url\\\"\\s*:\\s*\\\"([^\\\"]*Emby\\.UserData-[^\\\"]*\\.zip)\\\"");
      Version latest; if(!Version.TryParse((tag??"").TrimStart('v','V'),out latest)) throw new InvalidDataException("The latest GitHub release has an invalid version.");
-     if(latest<=CurrentVersion()) { config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateStatus="UpToDate"; config.LastUpdateError=null; Plugin.Instance.SaveConfiguration(); return; }
+     if(latest<=CurrentVersion()) { config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateStatus="UpToDate"; config.AvailableUpdateVersion=null; config.LastUpdateError=null; Plugin.Instance.SaveConfiguration(); return; }
      if(string.IsNullOrWhiteSpace(url)) throw new InvalidDataException("The latest GitHub release has no plugin ZIP asset.");
+     if(manualCheck&&!config.ManualUpdateApproved) { config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateStatus="Available"; config.AvailableUpdateVersion=latest.ToString(); config.LastUpdateError=null; Plugin.Instance.SaveConfiguration(); return; }
+     config.ManualUpdateApproved=false;
      var archive=await client.GetByteArrayAsync(url).ConfigureAwait(false);
      var updateDir=Path.Combine(Plugin.Instance.DataFolderPath,"automatic-updates"); Directory.CreateDirectory(updateDir);
      var zipPath=Path.Combine(updateDir,"download-"+latest+".zip"); File.WriteAllBytes(zipPath,archive);
@@ -32,7 +35,7 @@ namespace Emby.UserData.Services {
      var dllBackup=Path.Combine(updateDir,"Emby.UserData-"+CurrentVersion()+".dll"); File.Copy(assemblyPath,dllBackup,true);
      var temporary=assemblyPath+".update"; File.Copy(dllPath,temporary,true);
      if(File.Exists(assemblyPath)) File.Replace(temporary,assemblyPath,null); else File.Move(temporary,assemblyPath);
-     config.PendingRestartForUpdate=true; config.LastUpdateVersion=latest.ToString(); config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateStatus="RestartRequired"; config.LastUpdateError=null; Plugin.Instance.SaveConfiguration();
+     config.PendingRestartForUpdate=true; config.LastUpdateVersion=latest.ToString(); config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateStatus="RestartRequired"; config.AvailableUpdateVersion=null; config.LastUpdateError=null; Plugin.Instance.SaveConfiguration();
    }} catch(Exception ex) { config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateStatus="Error"; config.LastUpdateError=ex.Message; Plugin.Instance.SaveConfiguration(); }
   }
   static Version CurrentVersion() { return typeof(Plugin).GetTypeInfo().Assembly.GetName().Version; }
