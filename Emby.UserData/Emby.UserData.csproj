@@ -3,12 +3,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Emby.UserData</AssemblyName>
     <RootNamespace>Emby.UserData</RootNamespace>
-    <Version>1.1.6</Version>
+    <Version>1.1.7</Version>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="mediabrowser.server.core" Version="4.8.0.80" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\UserDataConfiguration.html" />

@@ -8,6 +8,6 @@ Plugin para Emby 4.8+ que añade una página administrativa **User Data** con ca
 docker build --target artifact --output type=local,dest=artifacts .
 ```
 
-Extrae **todos** los archivos del ZIP de lanzamiento al directorio `plugins` de Emby (incluye `Emby.UserData.dll` y `Newtonsoft.Json.dll`) y reinicia el servidor. En Docker, ese directorio debe estar dentro del volumen persistente de configuración de Emby.
+Copia `Emby.UserData.dll` al directorio `plugins` de Emby y reinicia el servidor. El plugin no requiere DLLs adicionales. En Docker, ese directorio debe estar dentro del volumen persistente de configuración de Emby.
 
 Los valores se almacenan en `plugins/configurations/UserData/user-data/store.json` y no modifican la base de datos de Emby.
