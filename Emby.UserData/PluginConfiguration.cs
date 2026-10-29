@@ -1,2 +1,2 @@
 using MediaBrowser.Model.Plugins;
-namespace Emby.UserData { public class PluginConfiguration : BasePluginConfiguration { } }
+namespace Emby.UserData { public class PluginConfiguration : BasePluginConfiguration { public bool AutoUpdateEnabled { get; set; } public bool PendingRestartForUpdate { get; set; } public string LastUpdateVersion { get; set; } public System.DateTime LastUpdateCheckUtc { get; set; } public string LastUpdateError { get; set; } } }

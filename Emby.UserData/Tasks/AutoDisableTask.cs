@@ -25,3 +25,13 @@ namespace Emby.UserData.Tasks {
   public void Dispose() { }
  }
 }
+namespace Emby.UserData.Tasks {
+ public sealed class AutoUpdateTask : IScheduledTask {
+  public string Name => "Check User Data plugin updates";
+  public string Key => "EmbyUserDataAutoUpdate";
+  public string Description => "Checks GitHub daily and installs a newer User Data plugin version when automatic updates are enabled.";
+  public string Category => "User Data";
+  public async Task Execute(CancellationToken cancellationToken, IProgress<double> progress) { await new UpdateService().CheckAndUpdateAsync(); progress.Report(100); }
+  public IEnumerable<TaskTriggerInfo> GetDefaultTriggers() { return new[] { new TaskTriggerInfo { Type=TaskTriggerInfo.TriggerDaily, TimeOfDayTicks=TimeSpan.Zero.Ticks } }; }
+ }
+}

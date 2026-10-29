@@ -18,6 +18,7 @@
 - Restrict data access and changes to server administrators.
 - Store plugin data independently from Emby's internal database.
 - Automatically display the plugin in Spanish when Emby's interface language is Spanish, and in English for every other interface language.
+- Optional daily automatic updates from GitHub. Before an update is staged, the plugin creates an internal full backup; restart Emby when the plugin reports that an update is ready.
 
 ### Installation
 
@@ -67,6 +68,7 @@ The resulting assembly is `artifacts/Emby.UserData.dll`.
 - Acceso y modificación restringidos a administradores del servidor.
 - Datos guardados fuera de la base de datos interna de Emby.
 - Idioma automático: el plugin se muestra en español si la interfaz de Emby está en español y en inglés para cualquier otro idioma.
+- Actualización automática opcional diaria desde GitHub. Antes de preparar una actualización, el plugin crea una copia interna completa; reinicia Emby cuando el plugin indique que la actualización está lista.
 
 ### Instalación
 
