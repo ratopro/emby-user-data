@@ -37,6 +37,13 @@ namespace Emby.UserData
                 MenuIcon = "person"
             };
             yield return new PluginPageInfo {
+                Name = "UserDataBackupConfiguration",
+                DisplayName = "Copia de seguridad",
+                EmbeddedResourcePath = GetType().Namespace + ".Web.UserDataBackupConfiguration.html",
+                EnableInMainMenu = true,
+                MenuIcon = "backup"
+            };
+            yield return new PluginPageInfo {
                 Name = "UserDataConfigurationjs",
                 EmbeddedResourcePath = GetType().Namespace + ".Web.UserDataConfiguration.js"
             };

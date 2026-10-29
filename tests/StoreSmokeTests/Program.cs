@@ -26,6 +26,14 @@ static class Program
             store.SaveUser("user-1", new Dictionary<string, string> { [text.Id] = "C-002" });
             Assert(store.GetUser("user-1").Values[select.Id] == "Premium", "Un campo desactivado perdió su valor.");
 
+            var structureBackup = store.Export("structure");
+            Assert(structureBackup.Users == null && structureBackup.Fields.Count == 2, "La exportación de estructura es incorrecta.");
+            var fullBackup = store.Export("full");
+            Assert(fullBackup.Users.ContainsKey("user-1"), "La exportación completa no contiene usuarios.");
+            var imported = new UserDataStore(Path.Combine(root, "import"));
+            imported.Import(fullBackup, "replace");
+            Assert(imported.GetUser("user-1").Values[text.Id] == "C-002", "La importación completa no restauró valores.");
+
             store.Delete(select.Id);
             Assert(!store.Read().Fields.Exists(f => f.Id == select.Id), "El campo no se eliminó.");
             Assert(!store.GetUser("user-1").Values.ContainsKey(select.Id), "El borrado no eliminó el valor asociado.");

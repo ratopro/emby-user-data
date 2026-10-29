@@ -6,3 +6,6 @@ namespace Emby.UserData.Models {
  public sealed class UserRecord { public string UserId { get; set; } public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>(); }
  public sealed class StoreDocument { public int FormatVersion { get; set; } = 1; public List<FieldDefinition> Fields { get; set; } = new List<FieldDefinition>(); public Dictionary<string, UserRecord> Users { get; set; } = new Dictionary<string, UserRecord>(); }
 }
+namespace Emby.UserData.Models {
+ public sealed class BackupDocument { public int FormatVersion { get; set; } = 1; public string Scope { get; set; } public System.DateTime ExportedAtUtc { get; set; } = System.DateTime.UtcNow; public System.Collections.Generic.List<FieldDefinition> Fields { get; set; } = new System.Collections.Generic.List<FieldDefinition>(); public System.Collections.Generic.Dictionary<string, UserRecord> Users { get; set; } }
+}
