@@ -40,6 +40,7 @@ define(['emby-input', 'emby-button', 'emby-select', 'emby-checkbox'], function (
         qs('#fieldType').onchange = function () { qs('#optionsWrap').classList.toggle('ud-hidden', this.value !== 'Select'); };
         qs('#saveField').onclick = function () { var field = editing || {}; field.Name = qs('#fieldName').value; field.Type = qs('#fieldType').value; field.Required = qs('#fieldRequired').checked; field.IsActive = editing ? editing.IsActive : true; field.Options = qs('#fieldOptions').value.split('\n').map(function (value) { return value.trim(); }).filter(Boolean); api('/UserData/Fields', 'POST', { Field: field }).then(function () { note('Campo guardado.'); resetField(); loadFields(); }).catch(function (error) { console.error('User Data: error al guardar campo', error); note(errorText(error, 'No se pudo guardar el campo.'), true); }); };
         qs('#cancelField').onclick = resetField; qs('#backToUsers').onclick = function () { selectedUser = null; qs('#userEditor').classList.add('ud-hidden'); qs('#userDirectory').classList.remove('ud-hidden'); };
-        resetField(); loadUsers(); loadFields();
+        if (page.dataset.defaultTab === 'values') { page.querySelector('.ud-tabs button[data-tab="values"]').click(); }
+                resetField(); loadUsers(); loadFields();
     };
 });

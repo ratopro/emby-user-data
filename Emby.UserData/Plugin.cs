@@ -30,6 +30,14 @@ namespace Emby.UserData
                 IsMainConfigPage = true
             };
             yield return new PluginPageInfo {
+                Name = "UserDataValuesConfiguration",
+                DisplayName = "Gestión Datos Usuario",
+                EmbeddedResourcePath = GetType().Namespace + ".Web.UserDataValuesConfiguration.html",
+                EnableInMainMenu = true,
+                MenuSection = "Server",
+                MenuIcon = "person"
+            };
+            yield return new PluginPageInfo {
                 Name = "UserDataConfigurationjs",
                 EmbeddedResourcePath = GetType().Namespace + ".Web.UserDataConfiguration.js"
             };
