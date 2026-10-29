@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Emby.UserData</AssemblyName>
     <RootNamespace>Emby.UserData</RootNamespace>
-    <Version>1.6.0</Version>
+    <Version>1.6.1</Version>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
@@ -13,7 +13,6 @@
     <EmbeddedResource Include="Web\UserDataConfiguration.html" />
     <EmbeddedResource Include="Web\UserDataConfiguration.js" />
     <EmbeddedResource Include="Web\UserDataValuesConfiguration.html" />
-    <EmbeddedResource Include="Web\UserDataBackupConfiguration.html" />
     <EmbeddedResource Include="Images\icon.png" />
   </ItemGroup>
 </Project>
