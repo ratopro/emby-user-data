@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
+using MediaBrowser.Controller.Plugins;
+using MediaBrowser.Model.Drawing;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
 
 namespace Emby.UserData
 {
-    public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
+    public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages, IHasThumbImage
     {
         public static Plugin Instance { get; private set; }
         public override string Name => "User Data";
@@ -18,8 +22,11 @@ namespace Emby.UserData
         {
             yield return new PluginPageInfo {
                 Name = "UserDataConfiguration",
-                DisplayName = "Datos de usuarios",
+                DisplayName = "Gestión Usuarios",
                 EmbeddedResourcePath = GetType().Namespace + ".Web.UserDataConfiguration.html",
+                EnableInMainMenu = true,
+                MenuSection = "Server",
+                MenuIcon = "people",
                 IsMainConfigPage = true
             };
             yield return new PluginPageInfo {
@@ -27,5 +34,7 @@ namespace Emby.UserData
                 EmbeddedResourcePath = GetType().Namespace + ".Web.UserDataConfiguration.js"
             };
         }
+        public Stream GetThumbImage() => Assembly.GetExecutingAssembly().GetManifestResourceStream(GetType().Namespace + ".Images.icon.png");
+        public ImageFormat ThumbImageFormat => ImageFormat.Png;
     }
 }
