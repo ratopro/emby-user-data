@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace Emby.UserData.Services {
  public sealed class UpdateService {
   const string LatestReleaseUrl="https://api.github.com/repos/ratopro/emby-user-data/releases/latest";
-  public async Task CheckAndUpdateAsync() {
+  public async Task CheckAndUpdateAsync(bool force = false) {
    var config=Plugin.Instance.Configuration;
-   if(!config.AutoUpdateEnabled) return;
+   if(!force&&!config.AutoUpdateEnabled) return;
    try {
     using(var client=new HttpClient()) {
      client.DefaultRequestHeaders.UserAgent.ParseAdd("Emby-UserData-Updater");
