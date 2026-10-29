@@ -1,5 +1,5 @@
 using System.Reflection;
 [assembly: AssemblyTitle("User Data")]
 [assembly: AssemblyDescription("Custom fields for Emby users")]
-[assembly: AssemblyVersion("1.9.14.0")]
-[assembly: AssemblyFileVersion("1.9.14.0")]
+[assembly: AssemblyVersion("1.9.15.0")]
+[assembly: AssemblyFileVersion("1.9.15.0")]
