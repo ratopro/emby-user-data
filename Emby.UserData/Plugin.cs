@@ -34,7 +34,6 @@ namespace Emby.UserData
                 DisplayName = "Gestión Datos Usuario",
                 EmbeddedResourcePath = GetType().Namespace + ".Web.UserDataValuesConfiguration.html",
                 EnableInMainMenu = true,
-                MenuSection = "Server",
                 MenuIcon = "person"
             };
             yield return new PluginPageInfo {
