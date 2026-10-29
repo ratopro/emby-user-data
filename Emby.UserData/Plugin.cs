@@ -28,8 +28,9 @@ namespace Emby.UserData
             PluginAssemblyPath = location;
         }
         public void ClearRestartNoticeIfUpdated() {
-            var installedVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            if (Configuration != null && Configuration.PendingRestartForUpdate && string.Equals(Configuration.LastUpdateVersion, installedVersion, StringComparison.OrdinalIgnoreCase)) {
+            var installedVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            Version pendingVersion;
+            if (Configuration != null && Configuration.PendingRestartForUpdate && Version.TryParse(Configuration.LastUpdateVersion, out pendingVersion) && installedVersion >= pendingVersion) {
                 Configuration.PendingRestartForUpdate = false;
                 Configuration.LastUpdateStatus = "UpToDate";
                 Configuration.LastUpdateError = null;
