@@ -11,6 +11,8 @@ namespace Emby.UserData.Services {
   const string LatestReleaseUrl="https://api.github.com/repos/ratopro/emby-user-data/releases/latest";
   public async Task CheckAndUpdateAsync(bool force = false) {
    var config=Plugin.Instance.Configuration;
+   force=force||config.ManualUpdateRequested;
+   if(config.ManualUpdateRequested) { config.ManualUpdateRequested=false; Plugin.Instance.SaveConfiguration(); }
    if(!force&&!config.AutoUpdateEnabled) return;
    try {
     using(var client=new HttpClient()) {
