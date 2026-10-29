@@ -21,7 +21,7 @@ namespace Emby.UserData.Tasks {
  public sealed class AutoDisableEntryPoint : IServerEntryPoint {
   private readonly IUserManager users;
   public AutoDisableEntryPoint(IUserManager users) { this.users=users; }
-  public void Run() { new UserDataStore().EvaluateAutoDisable(users); }
+  public void Run() { Plugin.Instance.ClearRestartNoticeIfUpdated(); new UserDataStore().EvaluateAutoDisable(users); }
   public void Dispose() { }
  }
 }
