@@ -31,7 +31,8 @@ namespace Emby.UserData.Services {
      var zipPath=Path.Combine(updateDir,"download-"+latest+".zip"); File.WriteAllBytes(zipPath,archive);
      var dllPath=ExtractDll(zipPath,updateDir);
      new UserDataStore().CreateInternalBackup("before-update-"+latest);
-     var assemblyPath=typeof(Plugin).GetTypeInfo().Assembly.Location;
+     var assemblyPath=Plugin.Instance.PluginAssemblyPath;
+     if(string.IsNullOrWhiteSpace(assemblyPath)||!File.Exists(assemblyPath)) throw new FileNotFoundException("The installed plugin DLL could not be located.",assemblyPath);
      var dllBackup=Path.Combine(updateDir,"Emby.UserData-"+CurrentVersion()+".dll"); File.Copy(assemblyPath,dllBackup,true);
      var temporary=assemblyPath+".update"; File.Copy(dllPath,temporary,true);
      if(File.Exists(assemblyPath)) File.Replace(temporary,assemblyPath,null); else File.Move(temporary,assemblyPath);
