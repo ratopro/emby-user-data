@@ -7,7 +7,8 @@ using Emby.UserData.Models;
 namespace Emby.UserData.Services {
  public sealed class UserDataStore {
   private static readonly object Sync = new object(); private readonly string file;
-  public UserDataStore() { var folder=Path.Combine(Plugin.Instance.DataFolderPath, "user-data"); Directory.CreateDirectory(folder); file=Path.Combine(folder,"store.json"); }
+  public UserDataStore() : this(Plugin.Instance.DataFolderPath) { }
+  public UserDataStore(string dataFolderPath) { var folder=Path.Combine(dataFolderPath, "user-data"); Directory.CreateDirectory(folder); file=Path.Combine(folder,"store.json"); }
   public StoreDocument Read() { lock(Sync) { if(!File.Exists(file)) return new StoreDocument(); try { return JsonConvert.DeserializeObject<StoreDocument>(File.ReadAllText(file)) ?? new StoreDocument(); } catch { var corrupt=file+".corrupt-"+DateTime.UtcNow.Ticks; File.Move(file,corrupt); return new StoreDocument(); } } }
   public void Save(StoreDocument data) { lock(Sync) { var tmp=file+".tmp"; File.WriteAllText(tmp,JsonConvert.SerializeObject(data,Formatting.Indented)); if(File.Exists(file)) File.Replace(tmp,file,null); else File.Move(tmp,file); } }
   public FieldDefinition Upsert(FieldDefinition field) { var d=Read(); var existing=d.Fields.FirstOrDefault(x=>x.Id==field.Id); if(existing==null) { field.Id=string.IsNullOrWhiteSpace(field.Id)?Guid.NewGuid().ToString("N"):field.Id; field.Order=d.Fields.Count; d.Fields.Add(field); } else { existing.Name=field.Name; existing.Type=field.Type; existing.Required=field.Required; existing.IsActive=field.IsActive; existing.Options=field.Options??existing.Options; } Save(d); return field; }
