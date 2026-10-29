@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\UserDataConfiguration.html" />
+    <EmbeddedResource Include="Web\UserDataConfiguration.js" />
   </ItemGroup>
 </Project>

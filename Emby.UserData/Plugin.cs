@@ -17,12 +17,14 @@ namespace Emby.UserData
         public IEnumerable<PluginPageInfo> GetPages()
         {
             yield return new PluginPageInfo {
-                Name = "userdata",
-                DisplayName = "User Data",
+                Name = "UserDataConfiguration",
+                DisplayName = "Datos de usuarios",
                 EmbeddedResourcePath = GetType().Namespace + ".Web.UserDataConfiguration.html",
-                EnableInMainMenu = true,
-                MenuSection = "Server",
-                MenuIcon = "person"
+                IsMainConfigPage = true
+            };
+            yield return new PluginPageInfo {
+                Name = "UserDataConfigurationjs",
+                EmbeddedResourcePath = GetType().Namespace + ".Web.UserDataConfiguration.js"
             };
         }
     }
