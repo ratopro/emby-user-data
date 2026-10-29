@@ -14,9 +14,11 @@ namespace Emby.UserData.Api {
  [Route("/UserData/Fields/{Id}", "DELETE")] public class DeleteField { public string Id { get; set; } public bool Permanent { get; set; } }
  [Route("/UserData/Fields/Order", "POST")] public class SetFieldOrder { public List<string> Ids { get; set; } }
  [Route("/UserData/Users/{UserId}", "GET")] public class GetUserValues : IReturn<UserRecord> { public string UserId { get; set; } }
+ [Route("/UserData/Users/{UserId}/AccessStatus", "GET")] public class GetAccessStatus : IReturn<UserAccessStatus> { public string UserId { get; set; } }
  [Route("/UserData/Users/{UserId}", "POST")] public class SaveUserValues { public string UserId { get; set; } public Dictionary<string,string> Values { get; set; } }
  [Route("/UserData/Backup", "GET")] public class GetBackup : IReturn<BackupDocument> { public string Scope { get; set; } }
  [Route("/UserData/Backup/Import", "POST")] public class ImportBackup { public BackupDocument Backup { get; set; } public string Mode { get; set; } }
+ public class UserAccessStatus { public bool IsDisabled { get; set; } }
  public class UserDataService : IService, IRequiresRequest {
   private readonly UserDataStore store = new UserDataStore();
   private readonly ISessionContext sessionContext; private readonly IUserManager userManager;
@@ -29,6 +31,7 @@ namespace Emby.UserData.Api {
   public object Delete(DeleteField request) { RequireAdministrator(); if(request.Permanent) store.Delete(request.Id); else store.Deactivate(request.Id); return null; }
   public object Post(SetFieldOrder request) { RequireAdministrator(); var doc=store.Read(); for(var i=0;i<(request.Ids??new List<string>()).Count;i++) { var field=doc.Fields.FirstOrDefault(x=>x.Id==request.Ids[i]); if(field!=null) field.Order=i; } store.Save(doc); return null; }
   public object Get(GetUserValues request) { RequireAdministrator(); return store.GetUser(request.UserId); }
+  public object Get(GetAccessStatus request) { RequireAdministrator(); System.Guid id; if(!System.Guid.TryParse(request.UserId,out id)) throw new ArgumentException("Invalid user id"); var get=userManager.GetType().GetMethod("GetUserById",new[] { typeof(System.Guid) }); var user=get.Invoke(userManager,new object[] { id }); if(user==null) throw new ArgumentException("User not found"); var policy=user.GetType().GetProperty("Policy").GetValue(user,null); return new UserAccessStatus { IsDisabled=(bool)policy.GetType().GetProperty("IsDisabled").GetValue(policy,null) }; }
   public object Post(SaveUserValues request) { RequireAdministrator(); if(string.IsNullOrWhiteSpace(request.UserId)) throw new ArgumentException("User id is required"); var values=request.Values??new Dictionary<string,string>(); store.SaveUser(request.UserId,values); store.ApplyBooleanAccess(userManager,request.UserId,values); return null; }
   public object Get(GetBackup request) { RequireAdministrator(); var scope=request.Scope=="structure" ? "structure" : "full"; return store.Export(scope); }
   public object Post(ImportBackup request) { RequireAdministrator(); store.Import(request.Backup, request.Mode); return null; }
