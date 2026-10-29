@@ -26,6 +26,13 @@ namespace Emby.UserData
                 if (!string.IsNullOrWhiteSpace(pluginsPath)) location = Path.Combine(pluginsPath, "Emby.UserData.dll");
             }
             PluginAssemblyPath = location;
+            var installedVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            if (Configuration.PendingRestartForUpdate && string.Equals(Configuration.LastUpdateVersion, installedVersion, StringComparison.OrdinalIgnoreCase)) {
+                Configuration.PendingRestartForUpdate = false;
+                Configuration.LastUpdateStatus = "UpToDate";
+                Configuration.LastUpdateError = null;
+                SaveConfiguration();
+            }
         }
         public IEnumerable<PluginPageInfo> GetPages()
         {
