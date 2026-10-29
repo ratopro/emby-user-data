@@ -1,0 +1,8 @@
+using System;
+using System.Collections.Generic;
+namespace Emby.UserData.Models {
+ public enum FieldType { Text, TextArea, Date, Number, Boolean, Select }
+ public sealed class FieldDefinition { public string Id { get; set; } = Guid.NewGuid().ToString("N"); public string Name { get; set; } public FieldType Type { get; set; } = FieldType.Text; public bool Required { get; set; } public bool IsActive { get; set; } = true; public int Order { get; set; } public List<string> Options { get; set; } = new List<string>(); }
+ public sealed class UserRecord { public string UserId { get; set; } public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>(); }
+ public sealed class StoreDocument { public int FormatVersion { get; set; } = 1; public List<FieldDefinition> Fields { get; set; } = new List<FieldDefinition>(); public Dictionary<string, UserRecord> Users { get; set; } = new Dictionary<string, UserRecord>(); }
+}
