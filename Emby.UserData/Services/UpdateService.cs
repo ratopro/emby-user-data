@@ -20,7 +20,9 @@ namespace Emby.UserData.Services {
      var json=await client.GetStringAsync(LatestReleaseUrl).ConfigureAwait(false);
      var tag=Match(json,"\\\"tag_name\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"");
      var url=Match(json,"\\\"browser_download_url\\\"\\s*:\\s*\\\"([^\\\"]*Emby\\.UserData-[^\\\"]*\\.zip)\\\"");
-     Version latest; if(!Version.TryParse((tag??"").TrimStart('v','V'),out latest)||latest<=CurrentVersion()||string.IsNullOrWhiteSpace(url)) { config.LastUpdateCheckUtc=DateTime.UtcNow; Plugin.Instance.SaveConfiguration(); return; }
+     Version latest; if(!Version.TryParse((tag??"").TrimStart('v','V'),out latest)) throw new InvalidDataException("The latest GitHub release has an invalid version.");
+     if(latest<=CurrentVersion()) { config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateStatus="UpToDate"; config.LastUpdateError=null; Plugin.Instance.SaveConfiguration(); return; }
+     if(string.IsNullOrWhiteSpace(url)) throw new InvalidDataException("The latest GitHub release has no plugin ZIP asset.");
      var archive=await client.GetByteArrayAsync(url).ConfigureAwait(false);
      var updateDir=Path.Combine(Plugin.Instance.DataFolderPath,"automatic-updates"); Directory.CreateDirectory(updateDir);
      var zipPath=Path.Combine(updateDir,"download-"+latest+".zip"); File.WriteAllBytes(zipPath,archive);
@@ -30,8 +32,8 @@ namespace Emby.UserData.Services {
      var dllBackup=Path.Combine(updateDir,"Emby.UserData-"+CurrentVersion()+".dll"); File.Copy(assemblyPath,dllBackup,true);
      var temporary=assemblyPath+".update"; File.Copy(dllPath,temporary,true);
      if(File.Exists(assemblyPath)) File.Replace(temporary,assemblyPath,null); else File.Move(temporary,assemblyPath);
-     config.PendingRestartForUpdate=true; config.LastUpdateVersion=latest.ToString(); config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateError=null; Plugin.Instance.SaveConfiguration();
-   }} catch(Exception ex) { config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateError=ex.Message; Plugin.Instance.SaveConfiguration(); }
+     config.PendingRestartForUpdate=true; config.LastUpdateVersion=latest.ToString(); config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateStatus="RestartRequired"; config.LastUpdateError=null; Plugin.Instance.SaveConfiguration();
+   }} catch(Exception ex) { config.LastUpdateCheckUtc=DateTime.UtcNow; config.LastUpdateStatus="Error"; config.LastUpdateError=ex.Message; Plugin.Instance.SaveConfiguration(); }
   }
   static Version CurrentVersion() { return typeof(Plugin).GetTypeInfo().Assembly.GetName().Version; }
   static string Match(string value,string pattern) { var match=Regex.Match(value,pattern,RegexOptions.IgnoreCase); return match.Success?match.Groups[1].Value.Replace("\\/","/"):null; }
