@@ -6,7 +6,23 @@ define(['emby-input', 'emby-button', 'emby-select', 'emby-checkbox'], function (
         function qs(selector) { return page.querySelector(selector); }
         function esc(value) { var node = document.createElement('div'); node.textContent = value == null ? '' : value; return node.innerHTML; }
         function note(message, error) { var el = qs('#notice'); el.textContent = message; el.className = 'ud-notice' + (error ? ' ud-danger' : ''); }
-        function api(url, method, data) { return ApiClient.ajax({ url: ApiClient.getUrl(url), type: method || 'GET', data: data ? JSON.stringify(data) : null, contentType: 'application/json' }); }
+        function api(url, method, data) {
+            return fetch(ApiClient.getUrl(url), {
+                method: method || 'GET',
+                headers: { 'X-Emby-Token': ApiClient.accessToken(), 'Content-Type': 'application/json' },
+                body: data ? JSON.stringify(data) : undefined
+            }).then(function (response) {
+                if (!response.ok) {
+                    return response.text().then(function (text) {
+                        var error = { status: response.status, message: text };
+                        try { error.responseJSON = JSON.parse(text); } catch (_) { }
+                        throw error;
+                    });
+                }
+                if (response.status === 204) { return null; }
+                return response.text().then(function (text) { return text ? JSON.parse(text) : null; });
+            });
+        }
         function errorText(error, fallback) { var detail = error && error.responseJSON && (error.responseJSON.Message || error.responseJSON.message); var status = error && (error.status || error.statusCode); return (detail || (error && error.message) || fallback) + (status ? ' (HTTP ' + status + ')' : ''); }
         function showEditor(user) { selectedUser = user; qs('#userDirectory').classList.add('ud-hidden'); qs('#userEditor').classList.remove('ud-hidden'); qs('#selectedUserHeading').innerHTML = avatar(user) + '<strong>' + esc(user.Name) + '</strong>'; renderForm(); }
         function avatar(user) { var initial = esc((user.Name || '?').charAt(0).toUpperCase()); var src = ApiClient.getUrl('Users/' + user.Id + '/Images/Primary?width=96'); return '<img class="ud-avatar" src="' + src + '" alt="" onerror="this.outerHTML=\'<span class=\\\'ud-avatar\\\'>' + initial + '</span>\'">'; }
